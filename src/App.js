@@ -7,6 +7,7 @@ const App = () => {
   let [operator, setOperator] = useState("");
   let [result, setResult] = useState(null);
   let [error, setError] = useState(false);
+  let [memory, setMemory] = useState("0");
 
   const buttonValues = ["AC", "+/-", "%", "/", "mc", "mr", "m-", "m+", "7", "8", "9", "*", "4", "5", "6", "-", "1", "2", "3", "+", "0", ".", "="];
   const numbers = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"];
@@ -36,7 +37,8 @@ const App = () => {
       return;
     }
     if (val === "%") {
-      setNumber(String(parseFloat(number || result.toString()) / 100));
+      // eslint-disable-next-line no-eval
+      setNumber(String(parseFloat((eval(`${(number || result) / 100}`).toFixed(9).toString()))));
       return;
     }
     if (val === "0") {
@@ -61,13 +63,39 @@ const App = () => {
       }
       // eslint-disable-next-line no-eval
       let res = String(parseFloat(eval(`${result} ${expression.slice(-1)} ${number || result}`).toFixed(9).toString()));
-      setNumber(res);
-      //setExpression(result + (operator || expression.slice(-1)) + (number || result));
+      if (errors.includes(res)) {
+        res === "NaN" && setNumber("Ошибка");
+        setError(true);
+        return res;
+      }
+      setNumber("");
       setExpression("");
-      setResult("");
+      setOperator("");
+      setResult(res);
+      return;
+    }
+
+    if (val === "mc") {
+      setMemory("0");
+      return;
+    }
+    if (val === "mr") {
+      setNumber(memory);
+      return;
+    }
+    if (val === "m-") {
+        // eslint-disable-next-line no-eval
+        setMemory(String(parseFloat((eval(`${memory} - ${number || result}`).toFixed(9).toString()))));
+      return;
+    }
+    if (val === "m+") {
+      memory === "0" ? setMemory(number || result) :
+        // eslint-disable-next-line no-eval
+        setMemory(String(parseFloat((eval(`${memory} + ${number || result}`).toFixed(9).toString()))));
       return;
     }
     if (isNumber) {
+      number === "" && operator === "" && setResult("");
       if (number === "0" || "") { // if the number is equal to "0" or "" and clicked 1-9
         setNumber(val);
         return;
@@ -80,8 +108,7 @@ const App = () => {
       if (operator) {
         setExpression(expression.slice(0, -1) + val);
       } else {
-        setExpression(expression + parseFloat(Number(number).toFixed(9)).toString() + val);
-        //number !== "" && setResult(result)
+        setExpression(expression + parseFloat(Number(number || result).toFixed(9)).toString() + val);
 
         number !== "" && setResult((prev) => {
           if (prev) {
@@ -101,27 +128,22 @@ const App = () => {
         })
       }
       number !== "" && setNumber("");
-
-      // number.length !== "0" && setFakeNumber(number);
-      // if (operator) {
-      //   setExpression(expression.slice(0, -1) + val);
-      // } else {
-      //   setExpression(expression + (number || fakeNumber) + val);
-      //   setFakeNumber((prev) => {
-      //     console.log(`${prev || "0"} ${val} ${number}`);
-      //     // eslint-disable-next-line no-eval
-      //     return eval(`${prev || "0"} ${val} ${number}`);
-      //   });
-      // }
-      // number.length !== "0" && setNumber("")
     }
   };
 
   return (
     <div className="App">
       <div className="wrapper">
-        <div className="number">{number || result}</div>
-        <div className="expression">{expression}</div>
+        <div className="memory">
+          {memory !== "0" ? `M: ${memory}` : null}
+        </div>
+        <div
+          className="number"
+          style={(number.length > 8 || (result && result.length > 8)) ? {fontSize: 60 - (number.length || result.length) * 1.75} : null}
+        >
+          {number || result}
+        </div>
+        <div className="expression">{expression.length > 30 ? ("..." + expression.slice(expression.length - 30)) : expression}</div>
         <div className="buttonsWrapper">
           {buttonValues.map(val => (
             <button
@@ -131,7 +153,7 @@ const App = () => {
               className={rightColumnButtons.includes(val) ? "rightColumnButton" : null}
               onClick={handleClick}
             >
-              {val}
+              {val === "*" ? "×" : val}
             </button>
           ))}
         </div>

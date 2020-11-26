@@ -15,6 +15,12 @@
   color: #fff;
   background: #000;
 }
+.memory {
+  width: 100%;
+  height: 21px;
+  margin-top: 20px;
+  padding: 0 18px;
+}
 .buttonsWrapper {
   display: flex;
   margin-bottom: 50px;
@@ -45,7 +51,7 @@
 .buttonsWrapper button[value="+/-"]:hover,
 .buttonsWrapper button[value="%"]:hover {
   color: #a5a5a5;
-  background: #7b7b7b;
+  background: #cecece;
 }
 .buttonsWrapper button[value="0"] {
   flex-basis: 134px;
@@ -62,7 +68,7 @@
   box-shadow: 0 0 10px 1px red;
 }
 .buttonsWrapper button:disabled {
-  background: #ccc;
+  background: #131313;
 }
 .buttonsWrapper .rightColumnButton {
   margin-right: 0;
@@ -81,16 +87,21 @@
   background: #fff;
 }
 .number {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
   width: 100%;
+  height: 60px;
+  margin-top: 30px;
+  margin-bottom: 10px;
   padding: 0 18px;
   font-size: 60px;
-  text-align: right;
   line-height: 1;
 }
 .expression {
   width: 100%;
   height: 21px;
-  padding: 0 10px;
+  padding: 0 18px;
   text-align: right;
 }
 .bottomLine {
