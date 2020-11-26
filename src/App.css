@@ -1,3 +1,6 @@
+* {
+  box-sizing: border-box;
+}
 .App {
   display: flex;
   justify-content: center;
@@ -7,25 +10,92 @@
   justify-content: center;
   flex-wrap: wrap;
   width: 320px;
+  border: 1px solid #fff;
+  border-radius: 30px;
+  color: #fff;
+  background: #000;
 }
-.wrapper button {
+.buttonsWrapper {
+  display: flex;
+  margin-bottom: 50px;
+  justify-content: center;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+.buttonsWrapper button {
   width: 60px;
-  margin: 10px;
+  height: 60px;
+  margin: 14px 14px 0 0;
+  padding: 0;
+  font-size: 20px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  border: 0;
+  border-radius: 30px;
+  background: #333;
+  color: #fff;
+}
+.buttonsWrapper button[value="AC"],
+.buttonsWrapper button[value="+/-"],
+.buttonsWrapper button[value="%"] {
+  background: #a5a5a5;
+}
+.buttonsWrapper button[value="AC"]:hover,
+.buttonsWrapper button[value="+/-"]:hover,
+.buttonsWrapper button[value="%"]:hover {
+  color: #a5a5a5;
+  background: #7b7b7b;
+}
+.buttonsWrapper button[value="0"] {
+  flex-basis: 134px;
+}
+.buttonsWrapper button:hover {
+  color: #333;
+  background: #a5a5a5;
+  cursor: pointer;
+}
+.buttonsWrapper button:focus {
+  outline: none;
+}
+.buttonsWrapper button:active {
+  box-shadow: 0 0 10px 1px red;
+}
+.buttonsWrapper button:disabled {
+  background: #ccc;
+}
+.buttonsWrapper .rightColumnButton {
+  margin-right: 0;
+  background: #ff9a0a;
+}
+.buttonsWrapper .rightColumnButton:hover {
+  color: #ff9a0a;
+  background: #fff;
+}
+.buttonsWrapper button[value="/"]:focus,
+.buttonsWrapper button[value="*"]:focus,
+.buttonsWrapper button[value="-"]:focus,
+.buttonsWrapper button[value="+"]:focus {
+  box-shadow: 0 0 10px 1px red;
+  color: #ff9a0a;
+  background: #fff;
 }
 .number {
   width: 100%;
-  padding: 0 10px;
-  font-size: 40px;
+  padding: 0 18px;
+  font-size: 60px;
   text-align: right;
-}
-.result {
-  width: 100%;
-  padding: 0 10px;
-  text-align: right;
+  line-height: 1;
 }
 .expression {
   width: 100%;
   height: 21px;
   padding: 0 10px;
   text-align: right;
+}
+.bottomLine {
+  height: 5px;
+  width: 35%;
+  margin-bottom: 10px;
+  background: #fff;
 }
