@@ -62,7 +62,7 @@ const App = () => {
       if ((parseFloat(number) === 0 && !expression)) {
         return;
       }
-      setFakeNumber(number || fakeNumber);
+      setFakeNumber((number || fakeNumber) || result);
       if (expression.includes("=")) {
         // eslint-disable-next-line no-eval
         let res = String(parseFloat(eval(`${result} ${fakeOperator} ${fakeNumber}`).toFixed(9).toString()));
