@@ -3,17 +3,17 @@ import "./App.css";
 
 const App = () => {
   let [number, setNumber] = useState("0");
+  let [fakeNumber, setFakeNumber] = useState("");
   let [expression, setExpression] = useState("");
   let [operator, setOperator] = useState("");
+  let [fakeOperator, setFakeOperator] = useState("");
   let [result, setResult] = useState(null);
-  let [error, setError] = useState(false);
   let [memory, setMemory] = useState("0");
+  let [error, setError] = useState(false);
 
   const buttonValues = ["AC", "+/-", "%", "/", "mc", "mr", "m-", "m+", "7", "8", "9", "*", "4", "5", "6", "-", "1", "2", "3", "+", "0", ".", "="];
   const numbers = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"];
   const operators = ["+", "-", "*", "/"];
-  const errors = ["Infinity", "-Infinity", "NaN"];
-
   const rightColumnButtons = ["/", "m+", "*", "-", "+", "="];
 
   const handleClick = e => {
@@ -26,6 +26,7 @@ const App = () => {
 
     if (val === "AC") {
       setNumber("0");
+      setFakeNumber("");
       setExpression("");
       setOperator("");
       setResult(null);
@@ -58,20 +59,29 @@ const App = () => {
       return;
     }
     if (val === "=") {
-      if ((parseFloat(number) === 0 && !expression) || !operators.includes(expression.slice(-1))) {
+      if ((parseFloat(number) === 0 && !expression)) {
         return;
       }
+      setFakeNumber(number || fakeNumber);
+      if (expression.includes("=")) {
+        // eslint-disable-next-line no-eval
+        let res = String(parseFloat(eval(`${result} ${fakeOperator} ${fakeNumber}`).toFixed(9).toString()));
+        setExpression(result + fakeOperator + fakeNumber + val);
+        setResult(res);
+        return;
+      }
+
       // eslint-disable-next-line no-eval
       let res = String(parseFloat(eval(`${result} ${expression.slice(-1)} ${number || result}`).toFixed(9).toString()));
-      if (errors.includes(res)) {
-        res === "NaN" && setNumber("Ошибка");
-        setError(true);
-        return res;
+      if (isFinite(+res)) {
+        setNumber("");
+        setExpression(expression + (number || result) + val);
+        //setOperator("");
+        setResult(res);
+        return;
       }
-      setNumber("");
-      setExpression("");
-      setOperator("");
-      setResult(res);
+      setNumber(isNaN(+res) ? "Ошибка" : res);
+      setError(true);
       return;
     }
 
@@ -95,16 +105,24 @@ const App = () => {
       return;
     }
     if (isNumber) {
+      setFakeOperator(operator);
       number === "" && operator === "" && setResult("");
       if (number === "0" || "") { // if the number is equal to "0" or "" and clicked 1-9
         setNumber(val);
         return;
       }
       setNumber(number + val);
+      expression.slice(-1) === "=" && setExpression("");
       return;
     }
     if (isOperator) {
       if (val === operator) return;
+      if (expression.slice(-1) === "=") {
+        let equalSignPosition = expression.indexOf("=") + 1;
+        let x = expression.slice(equalSignPosition);
+        setExpression(x + result + val);
+        return;
+      }
       if (operator) {
         setExpression(expression.slice(0, -1) + val);
       } else {
@@ -114,13 +132,11 @@ const App = () => {
           if (prev) {
             // eslint-disable-next-line no-eval
             let res = String(parseFloat((eval(`${prev} ${expression.slice(-1) || val} ${number}`).toFixed(9).toString())));
-            if (errors.includes(res)) {
-              res === "NaN" && setResult("Ошибка");
-              setError(true);
-              return res;
-            } else {
+            if (isFinite(+res)) {
               return res;
             }
+            setResult(isNaN(+res) ? "Ошибка" : res);
+            setError(true);
           } else {
             // eslint-disable-next-line no-eval
             return String(parseFloat((eval(number).toFixed(9).toString())));
