@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import "./App.css";
 
 const App = () => {
@@ -21,91 +21,90 @@ const App = () => {
     let isNumber = numbers.includes(val); // if clicked on a number
     let isOperator = operators.includes(val); // if clicked on a operator
 
-    isNumber && setOperator("");
-    isOperator && setOperator(val);
-
-    if (val === "AC") {
-      setNumber("0");
-      setFakeNumber("");
-      setExpression("");
-      setOperator("");
-      setResult(null);
-      setError(false);
-      return;
-    }
-    if (val === "+/-") {
-      setNumber(String(parseFloat(number || result.toString()) * -1));
-      return;
-    }
-    if (val === "%") {
-      // eslint-disable-next-line no-eval
-      setNumber(String(parseFloat((eval(`${(number || result) / 100}`).toFixed(9).toString()))));
-      return;
-    }
-    if (val === "0") {
-      if (number === "0") {
+    switch (val) {
+      case "AC":
+        setNumber("0");
+        setFakeNumber("");
+        setExpression("");
+        setOperator("");
+        setFakeOperator("");
+        setResult(null);
+        setMemory("0");
+        setError(false);
         return;
-      }
-    }
-    if (val === ".") {
-      if (number.includes(val)) { // if the number contains "."
+      case "+/-":
+        if (fakeNumber) {
+          setResult(String(parseFloat(result.toString()) * -1));
+          return;
+        }
+        setNumber(String(parseFloat(number || result.toString()) * -1));
         return;
-      }
-      if (number === "") {
-        setNumber("0.");
-        return;
-      }
-      setNumber(number + val);
-      return;
-    }
-    if (val === "=") {
-      if ((parseFloat(number) === 0 && !expression)) {
-        return;
-      }
-      setFakeNumber((number || fakeNumber) || result);
-      if (expression.includes("=")) {
+      case "%":
         // eslint-disable-next-line no-eval
-        let res = String(parseFloat(eval(`${result} ${fakeOperator} ${fakeNumber}`).toFixed(9).toString()));
-        setExpression(result + fakeOperator + fakeNumber + val);
-        setResult(res);
+        setNumber(String(parseFloat((eval(`${(number || result) / 100}`).toFixed(9).toString()))));
         return;
-      }
-
-      // eslint-disable-next-line no-eval
-      let res = String(parseFloat(eval(`${result} ${expression.slice(-1)} ${number || result}`).toFixed(9).toString()));
-      if (isFinite(+res)) {
-        setNumber("");
-        setExpression(expression + (number || result) + val);
-        //setOperator("");
-        setResult(res);
+      case "0":
+        if (number === "0") {
+          return;
+        }
         return;
-      }
-      setNumber(isNaN(+res) ? "Ошибка" : res);
-      setError(true);
-      return;
-    }
+      case ".":
+        if (number.includes(val)) { // if the number contains "."
+          return;
+        }
+        if (number === "") {
+          setNumber("0.");
+          return;
+        }
+        setNumber(number + val);
+        return;
+      case "=":
+        setFakeNumber(number || fakeNumber || result);
+        if ((parseFloat(number) === 0 || !expression)) {
+          return;
+        }
+        if (expression.includes("=")) {
+          // eslint-disable-next-line no-eval
+          let res = String(parseFloat(eval(`${result} ${fakeOperator} ${fakeNumber}`).toFixed(9).toString()));
+          setExpression(result + fakeOperator + fakeNumber + val);
+          setResult(res);
+          return;
+        }
 
-    if (val === "mc") {
-      setMemory("0");
-      return;
-    }
-    if (val === "mr") {
-      setNumber(memory);
-      return;
-    }
-    if (val === "m-") {
+        // eslint-disable-next-line no-eval
+        let res = String(parseFloat(eval(`${result} ${expression.slice(-1)} ${number || result}`).toFixed(9).toString()));
+        if (isFinite(+res)) {
+          setNumber("");
+          setExpression(expression + (number || result) + val);
+          setResult(res);
+          return;
+        }
+        setNumber(isNaN(+res) ? "Ошибка" : res);
+        setError(true);
+        return;
+      case "mc":
+        setMemory("0");
+        return;
+      case "mr":
+        setNumber(memory);
+        return;
+      case "m-":
         // eslint-disable-next-line no-eval
         setMemory(String(parseFloat((eval(`${memory} - ${number || result}`).toFixed(9).toString()))));
-      return;
+        return;
+      case "m+":
+        memory === "0" ? setMemory(number || result) :
+          // eslint-disable-next-line no-eval
+          setMemory(String(parseFloat((eval(`${memory} + ${number || result}`).toFixed(9).toString()))));
+        return;
+      default:
+        break;
     }
-    if (val === "m+") {
-      memory === "0" ? setMemory(number || result) :
-        // eslint-disable-next-line no-eval
-        setMemory(String(parseFloat((eval(`${memory} + ${number || result}`).toFixed(9).toString()))));
-      return;
-    }
+
     if (isNumber) {
-      setFakeOperator(operator);
+      setFakeNumber("");
+      setOperator("");
+      operator && setFakeOperator(operator);
       number === "" && operator === "" && setResult("");
       if (number === "0" || "") { // if the number is equal to "0" or "" and clicked 1-9
         setNumber(val);
@@ -116,6 +115,8 @@ const App = () => {
       return;
     }
     if (isOperator) {
+      setOperator(val);
+      setFakeOperator(val);
       if (val === operator) return;
       if (expression.slice(-1) === "=") {
         let equalSignPosition = expression.indexOf("=") + 1;
@@ -153,6 +154,11 @@ const App = () => {
         <div className="memory">
           {memory !== "0" ? `M: ${memory}` : null}
         </div>
+        <div style={{width: "100%"}}>number: {number}</div>
+        <div style={{width: "100%"}}>fakeNumber: {fakeNumber}</div>
+        <div style={{width: "100%"}}>result: {result}</div>
+        <div style={{width: "100%"}}>operator: {operator}</div>
+        <div style={{width: "100%"}}>fakeOperator: {fakeOperator}</div>
         <div
           className="number"
           style={(number.length > 8 || (result && result.length > 8)) ? {fontSize: 60 - (number.length || result.length) * 1.75} : null}
