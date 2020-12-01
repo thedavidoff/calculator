@@ -154,11 +154,6 @@ const App = () => {
         <div className="memory">
           {memory !== "0" ? `M: ${memory}` : null}
         </div>
-        <div style={{width: "100%"}}>number: {number}</div>
-        <div style={{width: "100%"}}>fakeNumber: {fakeNumber}</div>
-        <div style={{width: "100%"}}>result: {result}</div>
-        <div style={{width: "100%"}}>operator: {operator}</div>
-        <div style={{width: "100%"}}>fakeOperator: {fakeOperator}</div>
         <div
           className="number"
           style={(number.length > 8 || (result && result.length > 8)) ? {fontSize: 60 - (number.length || result.length) * 1.75} : null}
